@@ -2,7 +2,7 @@ import json
 
 from flask import Flask, request, render_template, make_response, redirect
 
-from api import wall_list, wall_add, wall_error, clear_messages
+from api import wall_list, wall_add, wall_error, clear_messages, check_flooding
 
 
 app = Flask(__name__)
@@ -19,7 +19,8 @@ app.secret_key = 'a4c96d59-57a8-11e4-8b97-80e6500ee2f6'
 @app.route("/")
 def index():
     """Return index page."""
-    return render_template("wall.html")
+    page = render_template("wall.html", messages=['message #1'])
+    return page
 
 
 def _convert_to_JSON(result):
@@ -46,19 +47,30 @@ def _convert_to_JSON(result):
     return response
 
 
-@app.route("/api/wall/list")
-def list_messages():
+@app.route("/api/wall/list.json")
+def list_messages_json():
     """Return list of wall messages as JSON."""
 
     result = wall_list()
     return _convert_to_JSON(result)
 
+
+@app.route("/api/wall/list.html")
+def list_messages_html():
+    """Return list of wall messages as JSON."""
+
+    result = wall_list()
+    messages = []
+    for message in result.get('messages', []):
+        print message['message']
+        print type(message['message'])
+
+    return render_template('_messages.html', messages=result.get('messages', []))
+
+
 @app.route("/api/wall/reset", methods=['POST'])
 def reset_messages():
     clear_messages()
-    # result = wall_list()
-    # return _convert_to_JSON(result)
-    #return redirect("/api/wall/list")
     return _convert_to_JSON({"result" : "OK"})
 
 
@@ -70,6 +82,11 @@ def add_message():
     # (to get things from a GET response, we've used request.args.get();
     # this is the equivalent for getting things from a POST response)
     msg = request.form.get('m').strip()
+    datetime = int(request.form.get('datetime').strip())
+    print datetime
+
+    if check_flooding(datetime):
+        return _convert_to_JSON({"result" : "failure"})
 
     if msg is None:
         result = wall_error("You did not specify a message to set.")

@@ -2,7 +2,8 @@ $(document).ready(function () {
     // Normally, JavaScript runs code at the time that the <script>
     // tags loads the JS. By putting this inside a jQuery $(document).ready()
     // function, this code only gets run when the document finishing loading.
-    loadmessages();
+    // loadmessages();
+    loadMessagesHTML();
     $("#message-form").submit(handleFormSubmit);
     $("#messages-clear").click(handleClearButton);
 });
@@ -61,15 +62,20 @@ function handleClearButton(evt) {
 function addMessage(msg) {
     $.post(
         "/api/wall/add",
-        {'m': msg},
+        {'m': msg, 'datetime': $.now()},
         function (data) {
             console.log("addMessage: ", data);
             displayResultStatus(data.result);
-            $("#message-container").empty();
-            loadmessages();
-            // setTimeout(function () {
-            // // alert("please wait a moment before your next msg")
-            // // }, 10000);
+            if (data.result === "failure")
+            {
+                alert("Wait 5 seconds between posting messages.")
+            }
+            else
+            {
+                $("#message-container").empty();
+                loadmessages();
+            }
+            
         }
     );
 }
@@ -108,7 +114,7 @@ function displayResultStatus(resultMsg) {
 function loadmessages(){
 
     
-    $.get("/api/wall/list", function(request_object)
+    $.get("/api/wall/list.json", function(request_object)
     {
       console.log(request_object["messages"]);
       for(var i = 0; i < request_object["messages"].length; i++)
@@ -117,4 +123,8 @@ function loadmessages(){
         $("#message-container").append(post_message);
       }
     });
+}
+
+function loadMessagesHTML() {
+    $('#message-container').load('/api/wall/list.html');
 }

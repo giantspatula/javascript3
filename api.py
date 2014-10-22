@@ -8,6 +8,7 @@ to use client-side session systems, this stores things there.
 
 
 from flask import session
+import time
 
 # So that you can play with the `get` API, we return a single
 # test message as the default.
@@ -40,6 +41,16 @@ def wall_list():
         "messages": session.setdefault('wall', DEFAULT_MESSAGES),
     }
 
+def check_flooding(datetime):
+    datetime = int(time.time())
+    last_message = session.get("last_message", 0)
+    if datetime - last_message < 5000:
+        #print "api line 46 (flooding)"
+        return True
+    else:
+        session["last_message"] = datetime
+        #print "api line 50 (no flooding)"
+        return False
 
 def wall_add(msg):
     """Set a new message.
@@ -63,8 +74,5 @@ def wall_add(msg):
 def clear_messages():
     """ clears messages and returns default session & message"""
     session['wall'] = DEFAULT_MESSAGES
-    # return {
-    #     "result": "OK",
-    #     "messages": session["wall"]
-    # }
+
 
