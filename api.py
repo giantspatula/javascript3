@@ -59,3 +59,12 @@ def wall_add(msg):
     result["result"] = "Message Received"
 
     return result
+
+def clear_messages():
+    """ clears messages and returns default session & message"""
+    session['wall'] = DEFAULT_MESSAGES
+    # return {
+    #     "result": "OK",
+    #     "messages": session["wall"]
+    # }
+

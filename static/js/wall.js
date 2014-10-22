@@ -2,8 +2,9 @@ $(document).ready(function () {
     // Normally, JavaScript runs code at the time that the <script>
     // tags loads the JS. By putting this inside a jQuery $(document).ready()
     // function, this code only gets run when the document finishing loading.
-
+    loadmessages();
     $("#message-form").submit(handleFormSubmit);
+    $("#messages-clear").click(handleClearButton);
 });
 
 
@@ -16,13 +17,43 @@ function handleFormSubmit(evt) {
     var textArea = $("#message");
     var msg = textArea.val();
 
+    // if($("#message-form").prop("disabled"))
+    //     {  do nothing }
+    // else
+    //     $("#message-form").prop("disabled", true)
+    //     setTimeout(function(){
+    //         $("#message-form").prop("disabled", false)
+    //     }, 5000)
+    // setTimeout(function () {
+    //     alert("please wait a moment before your next msg")
+    //     }, 2000);
+
     console.log("handleFormSubmit: ", msg);
     addMessage(msg);
 
     // Reset the message container to be empty
     textArea.val("");
+    
+    
 }
 
+function handleClearButton(evt) {
+    evt.preventDefault();
+    console.log("clicked on reset button")
+    $.post(
+        "/api/wall/reset",
+        {},
+         function(data){
+            console.log('handleClearButton got: ');
+            console.log(data);
+            if (data.result == 'OK') {
+                //alert("GOT THIS FAR!");
+                $("#message-container").empty();
+                loadmessages();
+            }
+         }
+        )
+}
 
 /**
  * Makes AJAX call to the server and the message to it.
@@ -34,6 +65,11 @@ function addMessage(msg) {
         function (data) {
             console.log("addMessage: ", data);
             displayResultStatus(data.result);
+            $("#message-container").empty();
+            loadmessages();
+            // setTimeout(function () {
+            // // alert("please wait a moment before your next msg")
+            // // }, 10000);
         }
     );
 }
@@ -66,5 +102,19 @@ function displayResultStatus(resultMsg) {
         setTimeout(function () {
             $(self).slideUp();
         }, 2000);
+    });
+}
+
+function loadmessages(){
+
+    
+    $.get("/api/wall/list", function(request_object)
+    {
+      console.log(request_object["messages"]);
+      for(var i = 0; i < request_object["messages"].length; i++)
+      {
+        post_message = "<li class='list-group-item'>" + request_object["messages"][i].message + "</li>";
+        $("#message-container").append(post_message);
+      }
     });
 }

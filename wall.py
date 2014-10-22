@@ -1,8 +1,8 @@
 import json
 
-from flask import Flask, request, render_template, make_response
+from flask import Flask, request, render_template, make_response, redirect
 
-from api import wall_list, wall_add, wall_error
+from api import wall_list, wall_add, wall_error, clear_messages
 
 
 app = Flask(__name__)
@@ -52,6 +52,14 @@ def list_messages():
 
     result = wall_list()
     return _convert_to_JSON(result)
+
+@app.route("/api/wall/reset", methods=['POST'])
+def reset_messages():
+    clear_messages()
+    # result = wall_list()
+    # return _convert_to_JSON(result)
+    #return redirect("/api/wall/list")
+    return _convert_to_JSON({"result" : "OK"})
 
 
 @app.route("/api/wall/add", methods=['POST'])

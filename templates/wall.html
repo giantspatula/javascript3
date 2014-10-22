@@ -45,15 +45,19 @@
           </h3>
         </div>
         <div class="panel-body">
+
           <form role="form" id="message-form">
             <div class="form-group">
               <textarea class="form-control" name="m" id="message"
                         placeholder="Enter message"></textarea>
             </div>
+
             <button id="message-send" type="submit" class="btn btn-primary">
               Submit
             </button>
           </form>
+
+
 
           <p id="sent-result" class="alert alert-info"></p>
 
@@ -69,16 +73,19 @@
             Messages
           </h3>
         </div>
+
         <div class="panel-body">
           <ul class="list-group" id="message-container">
-            <li class="list-group-item">Placeholder message #1</li>
+           <!--  <li class="list-group-item">Placeholder message #1</li>
             <li class="list-group-item">Placeholder message #2</li>
             <li class="list-group-item">Placeholder message #3</li>
             <li class="list-group-item">Placeholder message #4</li>
             <li class="list-group-item">Placeholder message #5</li>
-            <li class="list-group-item">Placeholder message #6</li>
+            <li class="list-group-item">Placeholder message #6</li> -->
           </ul>
+           <button id="messages-clear" type = "button" class="btn btn-primary">Clear Messages</button>
         </div>
+
       </div>
     </div>
   </div>
@@ -92,6 +99,29 @@
 <!-- Bootstrap's JS -->
 <script src="/static/js/wall.js"></script>
 <!-- Message Wall JS -->
+<script>
+// $.get("/api/wall/list", function(request_object)
+//     {
+//       alert("you have new messages!");
+//       console.log(request_object["messages"]);
+//       for(var i = 0; i < request_object["messages"].length; i++)
+//       {
+//         post_message = "<li class='list-group-item'>" + request_object["messages"][i].message + "</li>";
+//         $("#message-container").append(post_message);
+//       }
+//     });
+
+// $("#message-send").click(
+//   function(evt){
+//     alert("new message!!");
+//     console.log($("#m"));
+
+  // }
+
+
+//)
+
+</script>
 
 </body>
 
